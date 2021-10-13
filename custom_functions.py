@@ -1,29 +1,67 @@
-"""This Module introduces ML condensing functions
+"""Machine Learning Abstraction Functions
 
 Abstract the steps to generate and perform
 machine learning based trading algorithms.
+
 """
 
 import pandas as pd
 
-def generate_actual_returns(input_df, close_column='close', verbose=False):
+def generate_actual_returns(input_df, close_price='close', verbose=False):
     """Calculate actual returns from closing prices.
 
+    Args:
+        input_df (DF): The closing prices with a date index.
+        close_price (str): The name of closing price column.
 
-    Keyword arguments:
-    input_df -- dataframe with closing prices and a date index
-    close_column -- name of closing prices column (default 'close')
+    Returns:
+        A DataFrame adding daily percent changes between closing prices.
     """
     # Isolate the date index and close columns
-    signals_df = input_df.loc(:, [close_column]]
+    signals_df = input_df.loc(:, [close_price]]
 
     # Use the pct_change function to generate returns from close prices
-    signals_df['Actual Returns'] = signals_df[close_column].pct_change()
+    signals_df['actual_returns'] = signals_df[close_price].pct_change()
 
     # Drop all NaN values from the DataFrame
-    signals_df = signals_df=dropna()
+    signals_df = signals_df.dropna()
 
     # Optionally output the DataFrame to stdout
     if verbose: print(f'Output (generate_actual_returns):\n{signals_df}')
 
     return signals_df
+
+def generate_trading_signals(
+    input_df, close_price='close', actual_returns='actual_returns',
+    short_window=20, long_window=100, verbose=False):
+    """Calculate strategy returns based upon previous calculations.
+
+    This function applies two SMA (Simple Moving Average) calculations,
+    with lengths optionally defined by the user, to the closing prices,
+    generates trading signals for a long hold strategy, and lastly
+    calculates strategy returns.
+
+    Args:
+    input_df (DF): The closing prices with a date index, and actual returns.
+    close_price (str): Name of the closing price column.
+    actual_returns (str): Name of the actual returns column.
+    short_window (int): Length of the rolling short window.
+    long_window (int): Length of the rolling long window.
+
+    Returns:
+        A DataFrame adding strategy returns and in-progress steps.
+    """
+    # Introduce new column names
+
+
+    # Generate fast and slow simple moving averages
+    signals_df['SMA_Fast'] = signals_df[close_price] \
+            .rolling(window=short_window).mean()
+    signals_df['SMA_Slow'] = signals_df[close_price] \
+            .rolling(window=long_window).mean()
+
+    # Initialize the new signal column
+    signals_df['signal']
+
+    # Calculate buy signal when actual returns GE zero
+    signals_df.loc[(signals_df[actual_returns] >=0), 'signal'] = 1
