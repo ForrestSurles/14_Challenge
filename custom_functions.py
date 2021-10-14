@@ -18,13 +18,13 @@ def generate_actual_returns(input_df, close_price='close', verbose=False):
         A DataFrame adding daily percent changes between closing prices.
     """
     # Isolate the date index and close columns
-    signals_df = input_df.loc(:, [close_price]]
+    signals_df = input_df.loc[:, [close_price]]
 
     # Use the pct_change function to generate returns from close prices
     signals_df['actual_returns'] = signals_df[close_price].pct_change()
 
     # Drop all NaN values from the DataFrame
-    signals_df = signals_df.dropna()
+    signals_df.dropna(inplace=True)
 
     # Optionally output the DataFrame to stdout
     if verbose: print(f'Output (generate_actual_returns):\n{signals_df}')
@@ -72,12 +72,11 @@ def generate_trading_signals(
 
     # Optionally output the count of signal values to stdout
     if verbose:
-        print(f"""Output (raw trade signals):
-                  {signals_df[signal_name].value_counts()""")
+        print(f'Output (raw trade signals):\n{signals_df[signal_name].value_counts()}')
 
     # Calculate the strategy returns
-    signals_df[strategy_returns] = signals_df[actual_returns]
-                                   * signals_df[signal_name].shift()
+    signals_df[strategy_returns] = signals_df[actual_returns] \
+            * signals_df[signal_name].shift()
 
     # Optionally output the plot of strategy returns to examine performance
     if verbose:
