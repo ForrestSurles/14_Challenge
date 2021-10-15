@@ -45,10 +45,10 @@ def test_generate_actual_returns():
         parse_dates=True
         )
 
-    # Provided input
+    # Generate function output
     output_df = generate_actual_returns(input_df,'close',True)
 
-    # Default answers to test
+    # Default answers for tests
     check_list = [False, False]
 
     # Return True if output dataframes are equal in size
@@ -59,7 +59,8 @@ def test_generate_actual_returns():
 
     assert all(check_list)
 
-# Test SMA and trading signal generation and calculation of strategy returns
+# Test SMA generation, determine trading
+# signals, and calculate strategy returns
 def test_generate_trading_signals():
 
     # Hardcoded input variables
@@ -70,4 +71,32 @@ def test_generate_trading_signals():
     verbose=True
 
     # Path to input data
-    input_csv = Path()
+    input_csv = Path('./Resources/generate_actual_returns.csv')
+
+    # Path to known output
+    checker_csv = Path('./Resources/generate_trading_signals.csv')
+
+    input_df = pd.read_csv(
+        input_csv,
+        index_col='date',
+        infer_datetime_format=True,
+        parse_dates=True
+        )
+
+    checker_df = pd.read_csv(
+        checker_csv,
+        index_col='date',
+        infer_datetime_format=True,
+        parse_dates=True
+        )
+
+    # Generate function output
+    output_df = generate_trading_signals(
+            input_df,
+            close_price,
+            actual_returns,
+            short_window,
+            long_window,
+            True
+            )
+
