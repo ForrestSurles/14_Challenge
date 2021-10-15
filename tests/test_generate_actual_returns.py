@@ -20,12 +20,16 @@ import pandas as pd
 from pathlib import Path
 
 from custom_functions import generate_actual_returns
+from custom_functions import generate_trading_signals
 
-# test csv import and calculation of closing price actual returns
+# Test csv import and calculation of closing price actual returns
 def test_generate_actual_returns():
 
+    # Path to input data
     input_csv = Path('./Resources/emerging_markets_ohlcv.csv')
-    checker_csv = Path('./Resources/test_results.csv')
+
+    # Path to known output
+    checker_csv = Path('./Resources/generate_actual_returns.csv')
 
     input_df = pd.read_csv(
         input_csv,
@@ -41,13 +45,29 @@ def test_generate_actual_returns():
         parse_dates=True
         )
 
-    # provided input
+    # Provided input
     output_df = generate_actual_returns(input_df,'close',True)
 
+    # Default answers to test
     check_list = [False, False]
 
+    # Return True if output dataframes are equal in size
     if len(output_df) == len(checker_df): check_list[0] = True
 
+    # Return True if the first records from each DataFrame are the same
     if output_df.iloc[0, 0] == checker_df.iloc[0, 0]: check_list[1] =  True
 
-    assert check_list
+    assert all(check_list)
+
+# Test SMA and trading signal generation and calculation of strategy returns
+def test_generate_trading_signals():
+
+    # Hardcoded input variables
+    close_price='close'
+    actual_returns='actual_returns'
+    short_window=20
+    long_window=100
+    verbose=True
+
+    # Path to input data
+    input_csv = Path()
