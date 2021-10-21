@@ -6,6 +6,7 @@ machine learning based trading algorithms.
 """
 
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 def generate_actual_returns(input_df, close_price='close', verbose=False):
     """Calculate actual returns from closing prices.
@@ -84,3 +85,42 @@ def generate_trading_signals(
                 title='Strategy Returns')
 
     return input_df
+
+def generate_train_test_datasets(X, y, split):
+    """Split the data into training and testing datasets.
+
+    Args:
+        X (DF): The features DataFrame with SMA fast and slow columns.
+        y (Series): The target Series with the 'Signal' column values.
+        split (float): Percentage of data used for training vs. testing.
+
+    Returns:
+        Four DataFrames of the data split into testing and training sets.
+    """
+    # Calculate date to split data between training and testing
+    split_date_index = len(X.index) - int(round(split * len(X.index), 0))
+
+    # Split features data into train/test datasets
+    X_train = X.iloc[:split_date_index]
+    X_test = X.iloc[split_date_index:]
+
+    # Split target data into train/test datasets
+    y_train = y.iloc[:split_date_index]
+    y_test = y.iloc[split_date_index:]
+
+    scaler = StandardScaler()
+
+    # Shape the scaler to the X_train data
+    X_scaler = scaler.fit(X_train)
+
+    # Scale the features train/test datasets using the shaped scaler
+    X_train_scaled = pd.DataFrame(
+        X_scaler.transform(X_train),
+        index=X.index[:split_date_index]
+    )
+    X_test_scaled = pd.DataFrame(
+        X_scaler.transform(X_test),
+        index=X.index[split_date_index:]
+    )
+
+    return X_train_scaled, X_test_scaled, y_train, y_test
