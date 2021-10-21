@@ -100,3 +100,4 @@ def test_generate_trading_signals():
             True
             )
 
+    assert input_df.equals(output_df)
