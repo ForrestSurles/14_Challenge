@@ -58,29 +58,29 @@ def generate_trading_signals(
     strategy_returns = 'strategy_returns'
 
     # Generate fast and slow simple moving averages
-    signals_df[sma_fast_name] = signals_df[close_price] \
+    input_df[sma_fast_name] = input_df[close_price] \
             .rolling(window=short_window).mean()
-    signals_df[sma_slow_name] = signals_df[close_price] \
+    input_df[sma_slow_name] = input_df[close_price] \
             .rolling(window=long_window).mean()
 
     # Initialize the new signal column
-    signals_df[signal_name] = 0
+    input_df[signal_name] = 0
 
     # Calculate (buy/sell) signal when actual returns (GE/LT) zero
-    signals_df.loc[(signals_df[actual_returns] >= 0), signal_name] = 1
-    signals_df.loc[(signals_df[actual_returns] < 0), signal_name] = -1
+    input_df.loc[(input_df[actual_returns] >= 0), signal_name] = 1
+    input_df.loc[(input_df[actual_returns] < 0), signal_name] = -1
 
     # Optionally output the count of signal values to stdout
     if verbose:
-        print(f'Output (raw trade signals):\n{signals_df[signal_name].value_counts()}')
+        print(f'Output (raw trade signals):\n{input_df[signal_name].value_counts()}')
 
     # Calculate the strategy returns
-    signals_df[strategy_returns] = signals_df[actual_returns] \
-            * signals_df[signal_name].shift()
+    input_df[strategy_returns] = input_df[actual_returns] \
+            * input_df[signal_name].shift()
 
     # Optionally output the plot of strategy returns to examine performance
     if verbose:
-        (1 + signals_df[strategy_returns]).cumprod().plot(
+        (1 + input_df[strategy_returns]).cumprod().plot(
                 title='Strategy Returns')
 
-    return signals_df
+    return input_df
